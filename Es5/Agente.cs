@@ -25,11 +25,6 @@ namespace Es5
             return $"{CodiceFiscale} - {Nome} {Cognome} - {AnniServizio} anni di servizio";
         }
 
-        public override bool Equals(object obj)
-        {
-            return obj.GetType() == GetType() && CodiceFiscale == ((Agente)obj).CodiceFiscale;
-        }
-
         public List<Area> Aree { get; } = new List<Area>();
     }
 }

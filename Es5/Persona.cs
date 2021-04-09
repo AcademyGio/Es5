@@ -12,6 +12,16 @@ namespace Es5
         public string Cognome { get; }
         public string CodiceFiscale { get; }
 
+        public override bool Equals(object obj)
+        {
+            return obj.GetType() == GetType() && CodiceFiscale == ((Persona)obj).CodiceFiscale;
+        }
+
+        public override int GetHashCode()
+        {
+            return CodiceFiscale.GetHashCode();
+        }
+
         public Persona(string nome, string cognome, string codiceFiscale)
         {
             Nome = nome;
