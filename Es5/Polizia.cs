@@ -13,7 +13,7 @@ namespace Es5
     {
         static string _connectionString = ConfigurationManager.ConnectionStrings["Polizia"].ConnectionString;
 
-        public static List<Agente> ElencoAgenti()
+        public static List<Agente> ElencoAgenti(bool conAree = false)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             using (SqlCommand cmd = new SqlCommand("Select * from Agenti", conn))
@@ -24,9 +24,16 @@ namespace Es5
                 SqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
-                    agenti.Add(new Agente((int)reader["IdAgente"], reader["Nome"].ToString(), 
+                {
+                    Agente agente = new Agente((int)reader["IdAgente"], reader["Nome"].ToString(),
                         reader["Cognome"].ToString(), reader["CodiceFiscale"].ToString(),
-                        (DateTime)reader["DataNascita"], (int)reader["AnniServizio"]));
+                        (DateTime)reader["DataNascita"], (int)reader["AnniServizio"]);
+
+                    agenti.Add(agente);
+
+                    if (conAree)
+                        RecuperaAreeAgente(agente);
+                }
 
                 return agenti;
             }
@@ -99,6 +106,26 @@ namespace Es5
                 conn.Close();
 
                 return new Agente(idAgente, nome, cognome, codiceFiscale, dataNascita, anniServizio);
+            }
+        }
+
+        // extra non richiesto
+        private static void RecuperaAreeAgente(Agente agente)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlCommand cmd = new SqlCommand("SELECT Aree.* FROM Aree INNER JOIN Associazioni ON Aree.IdArea = Associazioni.IdArea " +
+                "WHERE Associazioni.IdAgente = @idAgente", conn))
+            {
+                cmd.Parameters.AddWithValue("@idAgente", agente.IdAgente);
+
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                    agente.Aree.Add(
+                        new Area((int)reader["IdArea"],
+                            reader["CodiceArea"].ToString(),
+                            (bool)reader["AltoRischio"]));
             }
         }
     }
