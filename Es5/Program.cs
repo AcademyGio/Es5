@@ -82,7 +82,7 @@ namespace Es5
 
         private static void MostraAgentiArea()
         {
-            Console.Write("Di quale area vuoi mostrare gli agenti? ");
+            Console.Write("Di quale area vuoi mostrare gli agenti: ");
             string codiceArea = Console.ReadLine();
 
             foreach (Agente a in Polizia.ElencoAgentiPerArea(codiceArea))
@@ -91,7 +91,7 @@ namespace Es5
 
         private static void MostraTuttiGliAgenti()
         {
-            foreach (Agente a in Polizia.ElencoAgenti(true))
+            foreach (Agente a in Polizia.ElencoAgenti())
                 Console.WriteLine(a);
         }
     }
