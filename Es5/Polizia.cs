@@ -102,8 +102,7 @@ namespace Es5
                     // nel caso genero un'eccezione di tipo AgenteDuplicato
 
                     if (ex.Message.Contains("IX_CodiceFiscale"))
-                        throw new AgenteDuplicatoException(codiceFiscale, 
-                            "Non possono esistere agenti con codice fiscale uguale");
+                        throw new AgenteDuplicatoException("Non possono esistere agenti con codice fiscale uguale", codiceFiscale);
                     else
                         throw;  
                 }

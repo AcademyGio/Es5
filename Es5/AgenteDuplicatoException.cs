@@ -15,14 +15,14 @@ namespace Es5
         }
 
         // costruttore per inizializzare gli eventuali membri specifici
-        public AgenteDuplicatoException(string codiceFiscale)
+        public AgenteDuplicatoException(string message)
+            : base(message)
         {
-            CodiceFiscale = codiceFiscale;
         }
 
         // altri costruttori che richiamano quelli della classe base
-        public AgenteDuplicatoException(string codiceFiscale, string message)
-            : base(message)
+        public AgenteDuplicatoException(string message, string codiceFiscale)
+            : this(message)
         {
             CodiceFiscale = codiceFiscale;
         }
