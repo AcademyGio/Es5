@@ -16,7 +16,6 @@ namespace Es5
             return obj.GetType() == GetType() && CodiceFiscale == ((Persona)obj).CodiceFiscale;
         }
 
-
         public Persona(string nome, string cognome, string codiceFiscale)
         {
             Nome = nome;
