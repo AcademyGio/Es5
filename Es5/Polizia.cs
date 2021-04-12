@@ -91,11 +91,32 @@ namespace Es5
                 new SqlCommandBuilder(da);  // crea i comandi per l'update del db
 
                 conn.Open();
-                da.Update(tableAgenti);
-                SqlCommand cmd = new SqlCommand("Select @@identity", conn); // select identity deve essere eseguito all'interno della
-                                                                            // stessa connessione in cui è stato fatto l'update della datatable
-                                                                            // quindi la connessione va aperta esplicitamente
-                int idAgente = (int)(decimal)cmd.ExecuteScalar();
+                try
+                {
+                    da.Update(tableAgenti);
+                }
+                catch (SqlException ex)
+                {
+                    // indago ex per capire se è un'eccezione dovuta ad 
+                    // agente duplicato (con stesso CF di un altro)
+                    // nel caso genero un'eccezione di tipo AgenteDuplicato
+
+                    if (ex.Message.Contains("IX_CodiceFiscale"))
+                        throw new AgenteDuplicatoException(codiceFiscale, 
+                            "Non possono esistere agenti con codice fiscale uguale");
+                    else
+                        throw;  
+                }
+
+
+                int idAgente = 0;
+                using (SqlCommand cmd = new SqlCommand("Select @@identity", conn))  // select identity deve essere eseguito all'interno della
+                                                                                    // stessa connessione in cui è stato fatto l'update della datatable
+                                                                                    // quindi la connessione va aperta esplicitamente
+                {
+                    idAgente = (int)(decimal)cmd.ExecuteScalar();
+                }
+
                 conn.Close();
 
                 return new Agente(idAgente, nome, cognome, codiceFiscale, dataNascita, anniServizio);

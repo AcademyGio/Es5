@@ -17,29 +17,39 @@ namespace Es5
                 Console.WriteLine("4. Inserisci nuovo agente");
                 Console.WriteLine("0. Esci");
 
-                switch (Console.ReadKey().KeyChar)
+                try
                 {
-                    case '1':
-                        Console.WriteLine();
-                        MostraTuttiGliAgenti();
-                        break;
-                    case '2':
-                        Console.WriteLine();
-                        MostraAgentiArea();
-                        break;
-                    case '3':
-                        Console.WriteLine();
-                        MostraAgentiServizio();
-                        break;
-                    case '4':
-                        Console.WriteLine();
-                        InserisciAgente();
-                        break;
-                    case '0':
-                        return;
-                    default:
-                        Console.WriteLine("Scelta non valida");
-                        break;
+                    switch (Console.ReadKey().KeyChar)
+                    {
+                        case '1':
+                            Console.WriteLine();
+                            MostraTuttiGliAgenti();
+                            break;
+                        case '2':
+                            Console.WriteLine();
+                            MostraAgentiArea();
+                            break;
+                        case '3':
+                            Console.WriteLine();
+                            MostraAgentiServizio();
+                            break;
+                        case '4':
+                            Console.WriteLine();
+                            InserisciAgente();
+                            break;
+                        case '0':
+                            return;
+                        default:
+                            Console.WriteLine("Scelta non valida");
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Si è verificata un'eccezione inattesa");
+                    Console.WriteLine(ex);
+                    Console.WriteLine("Il programma verrà terminato");
+                    return;
                 }
             } while (true);
         }
@@ -67,8 +77,16 @@ namespace Es5
             }
             while (!int.TryParse(Console.ReadLine(), out anniServizio));
 
-            Agente agente = Polizia.InserisciAgente(nome, cognome, codiceFiscale, dataNascita, anniServizio);
-            Console.WriteLine($"Inserito agente: {agente}");
+            try
+            {
+                Agente agente = Polizia.InserisciAgente(nome, cognome, codiceFiscale, dataNascita, anniServizio);
+                Console.WriteLine($"Inserito agente: {agente}");
+            }
+            catch (AgenteDuplicatoException ex)
+            {
+                Console.WriteLine($"Non ho inserito l'agente perché il suo CF {ex.CodiceFiscale} era già presente sul db");
+                Console.WriteLine(ex.Message);
+            }
         }
 
         private static void MostraAgentiServizio()
