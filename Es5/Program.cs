@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlClient;
 
 namespace Es5
 {
@@ -86,6 +87,18 @@ namespace Es5
             {
                 Console.WriteLine($"Non ho inserito l'agente perché il suo CF {ex.CodiceFiscale} era già presente sul db");
                 Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.InnerException.Message);
+            }
+            catch (AgenteMinorenneException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.InnerException.Message);
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Class >= 20)
+                    Console.WriteLine("Errore fatale sul database");
+                throw;  // ripropago l'eccezione a chi la potrà gestire
             }
         }
 

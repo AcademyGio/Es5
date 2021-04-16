@@ -22,7 +22,17 @@ namespace Es5
 
         // altri costruttori che richiamano quelli della classe base
         public AgenteDuplicatoException(string message, string codiceFiscale)
-            : this(message)
+            : this(message, null, codiceFiscale)
+        {
+        }
+
+        public AgenteDuplicatoException(string message, Exception inner)
+            :base(message, inner)
+        {
+        }
+
+        public AgenteDuplicatoException(string message, Exception inner, string codiceFiscale)
+            : base(message, inner)
         {
             CodiceFiscale = codiceFiscale;
         }

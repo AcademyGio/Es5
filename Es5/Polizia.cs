@@ -13,6 +13,25 @@ namespace Es5
     {
         static string _connectionString = ConfigurationManager.ConnectionStrings["Polizia"].ConnectionString;
 
+        public static Agente RecuperaAgente(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlCommand cmd = new SqlCommand("Select * from Agenti where IdAgente = @idAgente", conn))
+            {
+                cmd.Parameters.AddWithValue("@idAgente", id);
+
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())  // se l'ho trovato
+                    return new Agente((int)reader["IdAgente"], reader["Nome"].ToString(),
+                        reader["Cognome"].ToString(), reader["CodiceFiscale"].ToString(),
+                        (DateTime)reader["DataNascita"], (int)reader["AnniServizio"]);
+
+                throw new AgenteNonTrovatoException();
+            }
+        }
+
         public static List<Agente> ElencoAgenti()
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -24,7 +43,7 @@ namespace Es5
                 SqlDataReader reader = cmd.ExecuteReader();
 
                 while (reader.Read())
-                    agenti.Add(new Agente((int)reader["IdAgente"], reader["Nome"].ToString(), 
+                    agenti.Add(new Agente((int)reader["IdAgente"], reader["Nome"].ToString(),
                         reader["Cognome"].ToString(), reader["CodiceFiscale"].ToString(),
                         (DateTime)reader["DataNascita"], (int)reader["AnniServizio"]));
 
@@ -102,11 +121,18 @@ namespace Es5
                     // nel caso genero un'eccezione di tipo AgenteDuplicato
 
                     if (ex.Message.Contains("IX_CodiceFiscale"))
-                        throw new AgenteDuplicatoException("Non possono esistere agenti con codice fiscale uguale", codiceFiscale);
+                        throw new AgenteDuplicatoException(
+                            "Non possono esistere agenti con codice fiscale uguale",
+                            ex, // inner exception
+                            codiceFiscale);
+                    else if (ex.Message.Contains("CK_Maggiorenne"))
+                        throw new AgenteMinorenneException(
+                            "Non possono esistere agenti minorenni",
+                            ex); // inner exception
                     else
-                        throw;  
+                        throw;  // ciò che non conosco lo rimando al chiamante
+                                // sperando che lo sappia gestire in qualche modo
                 }
-
 
                 int idAgente = 0;
                 using (SqlCommand cmd = new SqlCommand("Select @@identity", conn))  // select identity deve essere eseguito all'interno della
